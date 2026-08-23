@@ -1,0 +1,101 @@
+<svg width="900" height="560" viewBox="0 0 900 560" xmlns="http://www.w3.org/2000/svg" role="img">
+  <title>S3 + CloudFront Secure Static Site Architecture</title>
+  <desc>Architecture diagram showing a user request flowing through CloudFront CDN to a locked-down S3 bucket via OAC. Direct S3 access is blocked.</desc>
+
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="900" height="560" fill="#0f1117"/>
+
+  <!-- AWS Cloud boundary -->
+  <rect x="260" y="40" width="610" height="480" rx="16" fill="none" stroke="#2a2f3e" stroke-width="1.5" stroke-dasharray="8 5"/>
+  <text x="280" y="68" font-family="monospace" font-size="13" fill="#3d4560">AWS Cloud (ap-south-1 · Mumbai)</text>
+
+  <!-- CloudFront region label -->
+  <rect x="290" y="85" width="240" height="180" rx="12" fill="#131929" stroke="#1e2d4a" stroke-width="1"/>
+  <text x="316" y="107" font-family="monospace" font-size="11" fill="#2e5fa3">EDGE NETWORK</text>
+
+  <!-- CloudFront box -->
+  <rect x="310" y="118" width="200" height="72" rx="8" fill="#1a2744" stroke="#2d5299" stroke-width="1.2"/>
+  <text x="410" y="148" font-family="sans-serif" font-size="14" font-weight="600" fill="#7EB3F7" text-anchor="middle">CloudFront</text>
+  <text x="410" y="165" font-family="sans-serif" font-size="11" fill="#4a7abf" text-anchor="middle">CDN · HTTPS · Edge cache</text>
+  <text x="410" y="180" font-family="sans-serif" font-size="11" fill="#4a7abf" text-anchor="middle">400+ global edge locations</text>
+
+  <!-- OAC box -->
+  <rect x="310" y="310" width="200" height="72" rx="8" fill="#12302a" stroke="#1a5c45" stroke-width="1.2"/>
+  <text x="410" y="340" font-family="sans-serif" font-size="14" font-weight="600" fill="#5ecfa0" text-anchor="middle">OAC</text>
+  <text x="410" y="357" font-family="sans-serif" font-size="11" fill="#2d8a62" text-anchor="middle">Origin Access Control</text>
+  <text x="410" y="373" font-family="sans-serif" font-size="11" fill="#2d8a62" text-anchor="middle">Signs every request (SigV4)</text>
+
+  <!-- S3 bucket box -->
+  <rect x="600" y="190" width="220" height="100" rx="8" fill="#1a1f2e" stroke="#2a3a5c" stroke-width="1.2"/>
+  <text x="710" y="222" font-family="sans-serif" font-size="14" font-weight="600" fill="#a0b4d6" text-anchor="middle">S3 Bucket</text>
+  <text x="710" y="240" font-family="sans-serif" font-size="11" fill="#5a7099" text-anchor="middle">palakpreet-s3-cloudfront-secure-site</text>
+  <text x="710" y="257" font-family="sans-serif" font-size="11" fill="#5a7099" text-anchor="middle">index.html · error.html</text>
+  <text x="710" y="274" font-family="sans-serif" font-size="11" fill="#5a7099" text-anchor="middle">SSE-S3 · versioning · block public</text>
+
+  <!-- Logs bucket box -->
+  <rect x="600" y="370" width="220" height="72" rx="8" fill="#1a1a1f" stroke="#2a2a3c" stroke-width="1.2"/>
+  <text x="710" y="400" font-family="sans-serif" font-size="14" font-weight="600" fill="#7a7a9a" text-anchor="middle">Logs Bucket</text>
+  <text x="710" y="418" font-family="sans-serif" font-size="11" fill="#4a4a6a" text-anchor="middle">palakpreet-s3-cloudfront-logs</text>
+  <text x="710" y="434" font-family="sans-serif" font-size="11" fill="#4a4a6a" text-anchor="middle">S3 server access logging</text>
+
+  <!-- User box -->
+  <rect x="40" y="215" width="150" height="72" rx="8" fill="#1a1a20" stroke="#2a2a35" stroke-width="1.2"/>
+  <text x="115" y="245" font-family="sans-serif" font-size="14" font-weight="600" fill="#c0c0d0" text-anchor="middle">User</text>
+  <text x="115" y="263" font-family="sans-serif" font-size="11" fill="#5a5a70" text-anchor="middle">Browser / client</text>
+  <text x="115" y="278" font-family="sans-serif" font-size="11" fill="#5a5a70" text-anchor="middle">anywhere in the world</text>
+
+  <!-- ARROW: User → CloudFront (HTTPS request) -->
+  <line x1="190" y1="245" x2="308" y2="175" stroke="#2d5299" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="228" y="198" font-family="sans-serif" font-size="11" fill="#2d5299" text-anchor="middle">HTTPS request</text>
+
+  <!-- ARROW: CloudFront → User (response) -->
+  <line x1="308" y1="195" x2="190" y2="262" stroke="#3a3a50" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="228" y="242" font-family="sans-serif" font-size="11" fill="#3a3a50" text-anchor="middle">cached response</text>
+
+  <!-- ARROW: CloudFront → OAC -->
+  <line x1="410" y1="190" x2="410" y2="308" stroke="#1a5c45" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="432" y="254" font-family="sans-serif" font-size="11" fill="#1a5c45">forwards</text>
+  <text x="432" y="268" font-family="sans-serif" font-size="11" fill="#1a5c45">to origin</text>
+
+  <!-- ARROW: OAC → S3 (signed request) -->
+  <line x1="510" y1="346" x2="598" y2="270" stroke="#1a5c45" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="570" y="300" font-family="sans-serif" font-size="11" fill="#1a5c45" text-anchor="middle">signed request</text>
+
+  <!-- ARROW: S3 → Logs -->
+  <line x1="710" y1="290" x2="710" y2="368" stroke="#2a2a3c" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="730" y="334" font-family="sans-serif" font-size="11" fill="#3a3a5a">logs</text>
+
+  <!-- BLOCKED direct access line -->
+  <line x1="190" y1="270" x2="598" y2="240" stroke="#8b2020" stroke-width="1.2" stroke-dasharray="6 4"/>
+  <!-- X mark -->
+  <circle cx="400" cy="256" r="14" fill="#1a0808" stroke="#8b2020" stroke-width="1.2"/>
+  <text x="400" y="261" font-family="sans-serif" font-size="13" font-weight="700" fill="#cc3333" text-anchor="middle">✕</text>
+  <text x="400" y="234" font-family="sans-serif" font-size="10" fill="#8b2020" text-anchor="middle">direct S3 access blocked (403)</text>
+
+  <!-- Bucket policy note -->
+  <rect x="600" y="302" width="220" height="56" rx="6" fill="#0f1a10" stroke="#1a3a1a" stroke-width="1" stroke-dasharray="4 3"/>
+  <text x="710" y="322" font-family="monospace" font-size="10" fill="#2d6b2d" text-anchor="middle">Bucket policy:</text>
+  <text x="710" y="337" font-family="monospace" font-size="10" fill="#2d6b2d" text-anchor="middle">Allow only cloudfront.amazonaws.com</text>
+  <text x="710" y="352" font-family="monospace" font-size="10" fill="#2d6b2d" text-anchor="middle">with matching SourceArn condition</text>
+
+  <!-- Legend -->
+  <rect x="40" y="390" width="200" height="110" rx="8" fill="#111318" stroke="#1e2030" stroke-width="1"/>
+  <text x="56" y="412" font-family="sans-serif" font-size="11" font-weight="600" fill="#6a6a8a">LEGEND</text>
+  <line x1="56" y1="428" x2="96" y2="428" stroke="#2d5299" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="104" y="432" font-family="sans-serif" font-size="11" fill="#5a6a8a">HTTPS flow</text>
+  <line x1="56" y1="450" x2="96" y2="450" stroke="#1a5c45" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="104" y="454" font-family="sans-serif" font-size="11" fill="#5a6a8a">Signed request</text>
+  <line x1="56" y1="472" x2="96" y2="472" stroke="#8b2020" stroke-width="1.2" stroke-dasharray="6 4"/>
+  <text x="104" y="476" font-family="sans-serif" font-size="11" fill="#5a6a8a">Blocked access</text>
+  <line x1="56" y1="492" x2="96" y2="492" stroke="#2a2a3c" stroke-width="1.5" marker-end="url(#arrow)"/>
+  <text x="104" y="496" font-family="sans-serif" font-size="11" fill="#5a6a8a">Logging</text>
+
+  <!-- Title -->
+  <text x="450" y="530" font-family="sans-serif" font-size="12" fill="#2a3050" text-anchor="middle">S3 + CloudFront Secure Static Site · palakpreet-cloud · Phase 2</text>
+</svg>
